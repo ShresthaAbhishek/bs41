@@ -1,5 +1,13 @@
 from bs4 import BeautifulSoup
 import requests
+import sqlite3
+
+
+conn = sqlite3.connect('dallas.db')
+c = conn.cursor()
+# c.execute('''CREATE TABLE subjects (
+#     id INTEGER PRIMARY KEY AUTOINCREMENT,
+#     course_name TEXT)''')
 
 url_template = 'https://catalog.dallascollege.edu/content.php?catoid=4&navoid=939&filter%5Bitem_type%5D=3&filter%5Bonly_active%5D=1&filter%5B3%5D=1&filter%5Bcpage%5D={page}'
 total_pages = 27
@@ -22,11 +30,13 @@ for page_num in range(1, total_pages + 1):
             subject_names = course_table.find_all('p')
             for subject_name in subject_names:
                 subject_name = subject_name.text.strip()
-                
+
                 # Check if the header has already been printed
                 if subject_name not in seen_headers:
                     print(subject_name)
                     seen_headers.add(subject_name)  # Add to set to avoid future duplicates
+                    c.execute("INSERT INTO subjects (course_name) VALUES(?)",(subject_name,) )
+                    conn.commit()
                 
         else:
             print(f"Less than two tables found on page {page_num}")
