@@ -7,6 +7,7 @@ total_pages = 27
 # Set to store already seen course headers (to avoid duplicates)
 seen_headers = set()
 
+#loop through new requests in each url with new page
 for page_num in range(1, total_pages + 1):
     url = url_template.format(page=page_num)
     print(f"Scraping page {page_num}...")
@@ -18,14 +19,14 @@ for page_num in range(1, total_pages + 1):
         page_tables = block_content.find_all('table', class_='table_default')
         if len(page_tables) > 1:
             course_table = page_tables[3]
-            course_types = course_table.find_all('p')
-            for header in course_types:
-                strong_text = header.text.strip()
+            subject_names = course_table.find_all('p')
+            for subject_name in subject_names:
+                subject_name = subject_name.text.strip()
                 
                 # Check if the header has already been printed
-                if strong_text not in seen_headers:
-                    print(strong_text)
-                    seen_headers.add(strong_text)  # Add to set to avoid future duplicates
+                if subject_name not in seen_headers:
+                    print(subject_name)
+                    seen_headers.add(subject_name)  # Add to set to avoid future duplicates
                 
         else:
             print(f"Less than two tables found on page {page_num}")
@@ -33,3 +34,5 @@ for page_num in range(1, total_pages + 1):
         print(f"No div with class 'block_content_outer' found on page {page_num}")
 
 print("Scraping completed.")
+print(f'Total no. of subjects: {len(seen_headers)}')
+#
