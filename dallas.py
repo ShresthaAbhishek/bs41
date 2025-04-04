@@ -5,9 +5,12 @@ import sqlite3
 
 conn = sqlite3.connect('dallas.db')
 c = conn.cursor()
+
+#Table Creation command
 # c.execute('''CREATE TABLE subjects (
 #     id INTEGER PRIMARY KEY AUTOINCREMENT,
 #     course_name TEXT)''')
+
 
 url_template = 'https://catalog.dallascollege.edu/content.php?catoid=4&navoid=939&filter%5Bitem_type%5D=3&filter%5Bonly_active%5D=1&filter%5B3%5D=1&filter%5Bcpage%5D={page}'
 total_pages = 27
@@ -22,6 +25,7 @@ for page_num in range(1, total_pages + 1):
     results = requests.get(url)
     soup = BeautifulSoup(results.text, 'html.parser')
     
+    #finding the td class
     block_content = soup.find('td', class_='block_content_outer')
     if block_content:
         page_tables = block_content.find_all('table', class_='table_default')
@@ -35,9 +39,10 @@ for page_num in range(1, total_pages + 1):
                 if subject_name not in seen_headers:
                     print(subject_name)
                     seen_headers.add(subject_name)  # Add to set to avoid future duplicates
-                    c.execute("INSERT INTO subjects (course_name) VALUES(?)",(subject_name,) )
-                    conn.commit()
-                
+                    # c.execute("INSERT INTO subjects (course_name) VALUES(?)",(subject_name,) )
+                    # conn.commit()
+                    
+                #UPDATE REQUIRED (ONE NEW COURSE HAS BEEN ADDED)
         else:
             print(f"Less than two tables found on page {page_num}")
     else:
